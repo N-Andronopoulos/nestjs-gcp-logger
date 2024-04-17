@@ -11,7 +11,7 @@
     "^.+\\.(t|j)s$": "ts-jest"
   },
   "moduleNameMapper": {
-    "@tazgr/nestjs-gcp-logger/(.*)": "<rootDir>/../libs/nestjs-gcp-logger/src/$1",
-    "@tazgr/nestjs-gcp-logger": "<rootDir>/../libs/nestjs-gcp-logger/src"
+    "@tazgr/nestjs-gcp-logger/(.*)": "<rootDir>/../src/$1",
+    "@tazgr/nestjs-gcp-logger": "<rootDir>/../src"
   }
 }
