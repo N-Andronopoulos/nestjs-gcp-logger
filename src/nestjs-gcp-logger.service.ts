@@ -27,7 +27,7 @@ export class GCPLoggerService implements LoggerService {
     try {
       this.logName = env.K_SERVICE || options.logName;
       this.gcpProjectId = readFileSync(this.projectIdPath, {
-        encoding: 'utf8'
+        encoding: 'utf8',
       });
     } catch (_) {
       this.gcpProjectId = options.projectId;
@@ -53,8 +53,15 @@ export class GCPLoggerService implements LoggerService {
   }
 
   private constructTrace(): string {
-    const xTraceContextId = this.req.headers['x-trace-context-id'] || uuidv4();
+    const xTraceContextId = this.req.headers['x-cloud-trace-context'] || uuidv4();
     return `projects/${this.gcpProjectId}/traces/${xTraceContextId}`;
+  }
+
+  private constructUrlWithDomain(): string {
+    const url = this.req.url || '/';
+    const origin = this.req.get('origin') ||
+      `${this.req.protocol}://${this.req.get('host')}` || '';
+    return origin + url;
   }
 
   private writeLog(
@@ -67,15 +74,20 @@ export class GCPLoggerService implements LoggerService {
       severity,
       labels: {
         component: componentName,
-        params: { ...optionalParams[0] }
+        params: { ...optionalParams[0] },
       },
-      resource: this.resource
+      resource: this.resource,
     } as any;
 
     if (this.req) {
       metadata.httpRequest = {
+        userAgent: this.req.headers['user-agent'],
+        requestSize: this.req.headers['content-length'],
+        remoteIp: this.req.ip,
+        headers: this.req.headers,
+        status: this.req.statusCode,
         requestMethod: this.req.method,
-        requestUrl: this.req.url,
+        requestUrl: this.constructUrlWithDomain(),
         protocol: this.req.headers['x-forwarded-proto'],
       };
       metadata.latency = performance.now() - this.performanceStart;
