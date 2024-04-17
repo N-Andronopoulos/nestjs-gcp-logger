@@ -53,8 +53,11 @@ export class GCPLoggerService implements LoggerService {
   }
 
   private constructTrace(): string {
-    const xTraceContextId = this.req.headers['x-cloud-trace-context'] || uuidv4();
-    return `projects/${this.gcpProjectId}/traces/${xTraceContextId}`;
+    // db497b8d625cc16ca4edd00f1afe0df0/9336177255371752071;o=1
+    // projects/your-project-id/traces/db497b8d625cc16ca4edd00f1afe0df0"
+    const xCloudTrace = this.req.headers['x-cloud-trace-context'] as string;
+    const traceId = xCloudTrace?.split('/')[0] || uuidv4();
+    return `projects/${this.gcpProjectId}/traces/${traceId}`;
   }
 
   private constructUrlWithDomain(): string {
@@ -84,7 +87,6 @@ export class GCPLoggerService implements LoggerService {
         userAgent: this.req.headers['user-agent'],
         requestSize: this.req.headers['content-length'],
         remoteIp: this.req.ip,
-        headers: this.req.headers,
         status: this.req.statusCode,
         requestMethod: this.req.method,
         requestUrl: this.constructUrlWithDomain(),
