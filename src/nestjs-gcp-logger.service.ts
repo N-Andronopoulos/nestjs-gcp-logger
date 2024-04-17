@@ -6,6 +6,7 @@ import { google } from '@google-cloud/logging/build/protos/protos';
 import { GCPLoggerModuleOptions } from './nestjs-gcp-logger-module.options';
 import { MODULE_OPTIONS_TOKEN } from './nestjs-gcp-logger.module-definition';
 import { Request } from 'express';
+import { v4 as uuidv4 } from 'uuid';
 import LogSeverity = google.logging.type.LogSeverity;
 
 @Injectable()
@@ -75,7 +76,7 @@ export class GCPLoggerService implements LoggerService {
       metadata.httpRequest = {
         requestMethod: this.req.method,
         requestUrl: this.req.url,
-        protocol: this.req.headers['x-forwarded-proto']
+        protocol: this.req.headers['x-forwarded-proto'] || uuidv4(),
       };
       metadata.latency = performance.now() - this.performanceStart;
       metadata.trace = this.constructTrace();
