@@ -53,7 +53,7 @@ export class GCPLoggerService implements LoggerService {
   }
 
   private constructTrace(): string {
-    const xTraceContextId = this.req.headers['x-trace-context-id'];
+    const xTraceContextId = this.req.headers['x-trace-context-id'] || uuidv4();
     return `projects/${this.gcpProjectId}/traces/${xTraceContextId}`;
   }
 
@@ -76,7 +76,7 @@ export class GCPLoggerService implements LoggerService {
       metadata.httpRequest = {
         requestMethod: this.req.method,
         requestUrl: this.req.url,
-        protocol: this.req.headers['x-forwarded-proto'] || uuidv4(),
+        protocol: this.req.headers['x-forwarded-proto'],
       };
       metadata.latency = performance.now() - this.performanceStart;
       metadata.trace = this.constructTrace();
