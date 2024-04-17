@@ -1,8 +1,8 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { GCPLoggerService } from "@tazgr/nestjs-gcp-logger/nestjs-gcp-logger.service";
-import { MODULE_OPTIONS_TOKEN } from '@tazgr/nestjs-gcp-logger/nestjs-gcp-logger.module-definition';
+import { Test, TestingModule } from '@nestjs/testing';
+import { GCPLoggerService } from './nestjs-gcp-logger.service';
+import { MODULE_OPTIONS_TOKEN } from './nestjs-gcp-logger.module-definition';
 
-describe("NestjsGcpLoggerService", () => {
+describe('NestjsGcpLoggerService', () => {
   let service: GCPLoggerService;
 
   beforeEach(async () => {
@@ -16,13 +16,13 @@ describe("NestjsGcpLoggerService", () => {
             logName: 'test-app'
           }
         }
-      ],
+      ]
     }).compile();
 
     service = module.get<GCPLoggerService>(GCPLoggerService);
   });
 
-  it("should be defined", () => {
+  it('should be defined', () => {
     expect(service).toBeDefined();
   });
 });

@@ -3,13 +3,15 @@ import { env } from 'node:process';
 import { Log, Logging, LogSync } from '@google-cloud/logging';
 import { readFileSync } from 'node:fs';
 import { google } from '@google-cloud/logging/build/protos/protos';
-import { GCPLoggerModuleOptions } from '@tazgr/nestjs-gcp-logger/nestjs-gcp-logger-module.options';
-import { MODULE_OPTIONS_TOKEN } from '@tazgr/nestjs-gcp-logger/nestjs-gcp-logger.module-definition';
+import { GCPLoggerModuleOptions } from './nestjs-gcp-logger-module.options';
+import { MODULE_OPTIONS_TOKEN } from './nestjs-gcp-logger.module-definition';
 import { Request } from 'express';
 import LogSeverity = google.logging.type.LogSeverity;
 
 @Injectable()
 export class GCPLoggerService implements LoggerService {
+  public req?: Request;
+  public performanceStart?: number;
   // https://cloud.google.com/logging/docs/reference/v2/rest/v2/MonitoredResource
   private readonly resource = { type: 'cloud_run_revision' } as const;
   // https://cloud.google.com/run/docs/container-contract#env-vars
@@ -19,9 +21,6 @@ export class GCPLoggerService implements LoggerService {
   private readonly gcpProjectId!: string;
   private readonly gcpLogging!: Logging;
   private readonly gcpLogger!: Log | LogSync;
-
-  public req?: Request;
-  public performanceStart?: number;
 
   constructor(@Inject(MODULE_OPTIONS_TOKEN) options: GCPLoggerModuleOptions) {
     try {
@@ -34,6 +33,22 @@ export class GCPLoggerService implements LoggerService {
     }
     this.gcpLogging = new Logging({ projectId: this.gcpProjectId });
     this.gcpLogger = this.gcpLogging.logSync(this.logName);
+  }
+
+  log(message: any, ...optionalParams: any[]): any {
+    this.writeLog(LogSeverity.INFO, message, optionalParams);
+  }
+
+  warn(message: any, ...optionalParams: any[]): any {
+    this.writeLog(LogSeverity.WARNING, message, optionalParams);
+  }
+
+  debug(message: any, ...optionalParams: any[]): any {
+    this.writeLog(LogSeverity.DEBUG, message, optionalParams);
+  }
+
+  error(message: any, ...optionalParams: any[]): any {
+    this.writeLog(LogSeverity.ERROR, message, optionalParams);
   }
 
   private constructTrace(): string {
@@ -67,21 +82,5 @@ export class GCPLoggerService implements LoggerService {
     }
     const json_Entry = this.gcpLogger.entry(metadata, message);
     this.gcpLogger.write(json_Entry);
-  }
-
-  log(message: any, ...optionalParams: any[]): any {
-    this.writeLog(LogSeverity.INFO, message, optionalParams);
-  }
-
-  warn(message: any, ...optionalParams: any[]): any {
-    this.writeLog(LogSeverity.WARNING, message, optionalParams);
-  }
-
-  debug(message: any, ...optionalParams: any[]): any {
-    this.writeLog(LogSeverity.DEBUG, message, optionalParams);
-  }
-
-  error(message: any, ...optionalParams: any[]): any {
-    this.writeLog(LogSeverity.ERROR, message, optionalParams);
   }
 }

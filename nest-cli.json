@@ -1,19 +1,27 @@
 {
   "$schema": "https://json.schemastore.org/nest-cli",
   "collection": "@nestjs/schematics",
-  "sourceRoot": "src",
   "compilerOptions": {
     "deleteOutDir": true,
     "webpack": true
   },
   "projects": {
-    "nestjs-gcp-logger": {
-      "type": "library",
-      "root": "libs/nestjs-gcp-logger",
-      "entryFile": "index",
-      "sourceRoot": "libs/nestjs-gcp-logger/src",
+    "demo": {
+      "type": "application",
+      "root": "demo",
+      "entryFile": "main",
+      "sourceRoot": "src",
       "compilerOptions": {
-        "tsConfigPath": "libs/nestjs-gcp-logger/tsconfig.lib.json"
+        "tsConfigPath": "demo/tsconfig.demo.json"
+      }
+    },
+    "lib": {
+      "type": "library",
+      "root": "src",
+      "entryFile": "index",
+      "sourceRoot": "src",
+      "compilerOptions": {
+        "tsConfigPath": "tsconfig.build.json"
       }
     }
   }

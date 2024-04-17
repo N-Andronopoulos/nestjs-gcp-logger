@@ -1,5 +1,5 @@
 import { ConfigurableModuleBuilder } from '@nestjs/common';
-import { GCPLoggerModuleOptions } from '@tazgr/nestjs-gcp-logger/nestjs-gcp-logger-module.options';
+import { GCPLoggerModuleOptions } from './nestjs-gcp-logger-module.options';
 
 export const {
   ConfigurableModuleClass,

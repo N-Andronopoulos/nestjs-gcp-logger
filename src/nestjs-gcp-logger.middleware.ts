@@ -1,5 +1,5 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
-import { GCPLoggerService } from '@tazgr/nestjs-gcp-logger/nestjs-gcp-logger.service';
+import { GCPLoggerService } from './nestjs-gcp-logger.service';
 import { Request, Response } from 'express';
 
 @Injectable()

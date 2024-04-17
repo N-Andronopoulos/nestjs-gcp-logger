@@ -19,10 +19,10 @@
     "noFallthroughCasesInSwitch": false,
     "paths": {
       "@tazgr/nestjs-gcp-logger": [
-        "libs/nestjs-gcp-logger/src"
+        "src"
       ],
       "@tazgr/nestjs-gcp-logger/*": [
-        "libs/nestjs-gcp-logger/src/*"
+        "src/*"
       ]
     }
   }
