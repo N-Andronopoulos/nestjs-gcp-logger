@@ -90,9 +90,9 @@ export class GCPLoggerService implements LoggerService {
         status: this.req.statusCode,
         requestMethod: this.req.method,
         requestUrl: this.constructUrlWithDomain(),
-        protocol: this.req.headers['x-forwarded-proto'],
+        protocol: this.req.headers['x-forwarded-proto'] || this.req.protocol,
       };
-      metadata.latency = performance.now() - this.performanceStart;
+      metadata.latency = `${(performance.now() - this.performanceStart)/1000}s`;
       metadata.trace = this.constructTrace();
     }
     const json_Entry = this.gcpLogger.entry(metadata, message);
