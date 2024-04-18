@@ -1,6 +1,6 @@
 {
   "name": "@tazgr/nestjs-gcp-logger",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "A NestJS module that provides a logger that is GCP Cloud Logging compatible.",
   "author": "Nikolas Andronopoulos",
   "private": false,
@@ -12,6 +12,17 @@
     "registry": "https://registry.npmjs.org/",
     "access": "public"
   },
+  "keywords": [
+    "nestjs",
+    "google cloud",
+    "gcp",
+    "logger",
+    "log",
+    "logging",
+    "trace",
+    "tracing",
+    "cloud run"
+  ],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
