@@ -6,10 +6,20 @@ import { Request, Response } from 'express';
 export class GCPLoggerMiddleware implements NestMiddleware {
   constructor(private logger: GCPLoggerService) {}
 
-  use(req: Request, _res: Response, next: (error?: any) => void): any {
+  use(req: Request, res: Response, next: (error?: any) => void): any {
     this.logger.performanceStart = performance.now();
     this.logger.req = req;
-    req.on('close', () => this.logger.req = null);
+    res.on('close', () => this.cleanupLogger(res))
+    res.on('finish', () => this.cleanupLogger(res))
+    res.on('error', () => this.cleanupLogger(res))
     next();
+  }
+
+  private cleanupLogger(res: Response) {
+    this.logger.req = null;
+    this.logger.performanceStart = null;
+    res.removeListener('close', this.cleanupLogger);
+    res.removeListener('finish', this.cleanupLogger);
+    res.removeListener('error', this.cleanupLogger);
   }
 }

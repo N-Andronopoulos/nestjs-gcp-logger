@@ -1,39 +1,33 @@
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
-import { env } from 'node:process';
 import { Log, Logging, LogSync } from '@google-cloud/logging';
-import { readFileSync } from 'node:fs';
 import { google } from '@google-cloud/logging/build/protos/protos';
 import { GCPLoggerModuleOptions } from './nestjs-gcp-logger-module.options';
 import { MODULE_OPTIONS_TOKEN } from './nestjs-gcp-logger.module-definition';
 import { Request } from 'express';
-import { v4 as uuidv4 } from 'uuid';
 import LogSeverity = google.logging.type.LogSeverity;
 
 @Injectable()
 export class GCPLoggerService implements LoggerService {
-  public req?: Request;
-  public performanceStart?: number;
-  // https://cloud.google.com/logging/docs/reference/v2/rest/v2/MonitoredResource
-  private readonly resource = { type: 'cloud_run_revision' } as const;
-  // https://cloud.google.com/run/docs/container-contract#env-vars
-  private readonly projectIdPath = '/computeMetadata/v1/project/project-id';
-  // https://cloud.google.com/run/docs/container-contract#env-vars
+  private readonly resource: { type: string, labels?: { [key: string]: string } } = { type: 'global' };
   private readonly logName!: string;
   private readonly gcpProjectId!: string;
   private readonly gcpLogging!: Logging;
   private readonly gcpLogger!: Log | LogSync;
 
+  public req?: Request;
+  public performanceStart?: number;
+
   constructor(@Inject(MODULE_OPTIONS_TOKEN) options: GCPLoggerModuleOptions) {
-    try {
-      this.logName = env.K_SERVICE || options.logName;
-      this.gcpProjectId = readFileSync(this.projectIdPath, {
-        encoding: 'utf8',
-      });
-    } catch (_) {
-      this.gcpProjectId = options.projectId;
-    }
+    this.logName = options.logName;
+    this.gcpProjectId = options.projectId;
+    if (options.resourceType) this.resource.type = options.resourceType;
+    if (options.resourceLabels) this.resource.labels = options.resourceLabels;
     this.gcpLogging = new Logging({ projectId: this.gcpProjectId });
-    this.gcpLogger = this.gcpLogging.logSync(this.logName);
+    if (options.isAsyncLogger) {
+      this.gcpLogger = this.gcpLogging.log(this.logName);
+    } else {
+      this.gcpLogger = this.gcpLogging.logSync(this.logName);
+    }
   }
 
   log(message: any, ...optionalParams: any[]): any {
@@ -52,21 +46,6 @@ export class GCPLoggerService implements LoggerService {
     this.writeLog(LogSeverity.ERROR, message, optionalParams);
   }
 
-  private constructTrace(): string {
-    // db497b8d625cc16ca4edd00f1afe0df0/9336177255371752071;o=1
-    // projects/your-project-id/traces/db497b8d625cc16ca4edd00f1afe0df0"
-    const xCloudTrace = this.req.headers['x-cloud-trace-context'] as string;
-    const traceId = xCloudTrace?.split('/')[0] || uuidv4();
-    return `projects/${this.gcpProjectId}/traces/${traceId}`;
-  }
-
-  private constructUrlWithDomain(): string {
-    const url = this.req.url || '/';
-    const origin = this.req.get('origin') ||
-      `${this.req.protocol}://${this.req.get('host')}` || '';
-    return origin + url;
-  }
-
   private writeLog(
     severity: LogSeverity,
     message: any,
@@ -77,23 +56,14 @@ export class GCPLoggerService implements LoggerService {
       severity,
       labels: {
         component: componentName,
-        params: { ...optionalParams[0] },
+        ...{ ...optionalParams[0] }
       },
-      resource: this.resource,
+      resource: this.resource
     } as any;
 
     if (this.req) {
-      metadata.httpRequest = {
-        userAgent: this.req.headers['user-agent'],
-        requestSize: this.req.headers['content-length'],
-        remoteIp: this.req.ip,
-        status: this.req.statusCode,
-        requestMethod: this.req.method,
-        requestUrl: this.constructUrlWithDomain(),
-        protocol: this.req.headers['x-forwarded-proto'] || this.req.protocol,
-      };
-      metadata.latency = `${(performance.now() - this.performanceStart)/1000}s`;
-      metadata.trace = this.constructTrace();
+      metadata.httpRequest = this.req;
+      metadata.latency = `${(performance.now() - this.performanceStart) / 1000}s`;
     }
     const json_Entry = this.gcpLogger.entry(metadata, message);
     this.gcpLogger.write(json_Entry);

@@ -10,8 +10,14 @@ export class AppModule {
       module: AppModule,
       imports: [
         GCPLoggingModule.register({
+          isGlobal: true,
           projectId: 'default-project-id',
-          logName: 'my-app-api'
+          logName: 'my-app-api',
+          isAsyncLogger: false,
+          resourceType: 'global',
+          resourceLabels: {
+            my: 'label',
+          }
         })
       ],
       controllers: [AppController],
