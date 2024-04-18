@@ -1,6 +1,6 @@
 {
   "name": "@tazgr/nestjs-gcp-logger",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "A NestJS module that provides a logger that is GCP Cloud Logging compatible.",
   "author": "Nikolas Andronopoulos",
   "private": false,
