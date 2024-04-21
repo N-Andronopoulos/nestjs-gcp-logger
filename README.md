@@ -2,6 +2,7 @@
 
 ![XKCD 2863](https://imgs.xkcd.com/comics/space_typography.png)
 
+[![npm version](https://badge.fury.io/js/@tazgr%2Fnestjs-gcp-logger.svg)](https://badge.fury.io/js/@tazgr%2Fnestjs-gcp-logger)
 
 It's a simple logger that is compatible with Google Cloud Logging https://cloud.google.com/logging?hl=en and https://cloud.google.com/products/operations?hl=en (aka tracing).
 
