@@ -12,6 +12,10 @@
     "registry": "https://registry.npmjs.org/",
     "access": "public"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/N-Andronopoulos/nestjs-gcp-logger.git"
+  },
   "keywords": [
     "nestjs",
     "google cloud",
