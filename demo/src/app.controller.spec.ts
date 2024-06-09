@@ -13,7 +13,7 @@ describe('AppController', () => {
       providers: [AppService]
     }).compile();
 
-    appController = await app.resolve<AppController>(AppController);
+    appController = app.get<AppController>(AppController);
   });
 
   describe('root', () => {

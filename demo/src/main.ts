@@ -4,7 +4,7 @@ import { GCPLoggerService } from '@tazgr/nestjs-gcp-logger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule.register(), { bufferLogs: true });
-  app.useLogger(app.get(GCPLoggerService));
+  app.useLogger(await app.resolve(GCPLoggerService));
   await app.listen(3000);
 }
 
