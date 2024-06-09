@@ -6,7 +6,9 @@ import { MODULE_OPTIONS_TOKEN } from './nestjs-gcp-logger.module-definition';
 import { Request } from 'express';
 import LogSeverity = google.logging.type.LogSeverity;
 
-@Injectable()
+@Injectable({
+  scope: Scope.REQUEST
+})
 export class GCPLoggerService implements LoggerService {
   private readonly resource: { type: string, labels?: { [key: string]: string } } = { type: 'global' };
   private readonly logName!: string;
