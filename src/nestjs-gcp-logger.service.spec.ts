@@ -19,7 +19,7 @@ describe('NestjsGcpLoggerService', () => {
       ]
     }).compile();
 
-    service = module.get<GCPLoggerService>(GCPLoggerService);
+    service = await module.resolve<GCPLoggerService>(GCPLoggerService);
   });
 
   it('should be defined', () => {
