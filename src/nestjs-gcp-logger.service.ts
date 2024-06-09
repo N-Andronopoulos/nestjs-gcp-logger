@@ -1,4 +1,4 @@
-import { Inject, Injectable, LoggerService } from '@nestjs/common';
+import { Inject, Injectable, LoggerService, Scope } from '@nestjs/common';
 import { Log, Logging, LogSync } from '@google-cloud/logging';
 import { google } from '@google-cloud/logging/build/protos/protos';
 import { GCPLoggerModuleOptions } from './nestjs-gcp-logger-module.options';
