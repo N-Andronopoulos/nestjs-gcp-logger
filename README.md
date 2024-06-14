@@ -23,7 +23,7 @@ If it's not setup you will get the default logs/logger.
 async function bootstrap() {
   const app = await NestFactory.create(AppModule.register(), { bufferLogs: true });
   // Important!
-  app.useLogger(app.get(GCPLoggerService));
+  app.useLogger(await app.resolve(GCPLoggerService));
   await app.listen(3000);
 }
 ```
