@@ -17,11 +17,11 @@ export class AppModule {
           resourceType: 'global',
           resourceLabels: {
             my: 'label',
-          }
-        })
+          },
+        }),
       ],
       controllers: [AppController],
-      providers: [AppService]
+      providers: [AppService],
     };
   }
 }
