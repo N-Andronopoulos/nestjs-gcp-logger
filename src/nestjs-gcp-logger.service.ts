@@ -4,8 +4,8 @@ import { google } from '@google-cloud/logging/build/protos/protos';
 import { GCPLoggerModuleOptions } from './nestjs-gcp-logger-module.options';
 import { MODULE_OPTIONS_TOKEN } from './nestjs-gcp-logger.module-definition';
 import { ClsService } from 'nestjs-cls';
-import LogSeverity = google.logging.type.LogSeverity;
 import { RequestAsyncStore } from '@tazgr/nestjs-gcp-logger/request-async-store';
+import LogSeverity = google.logging.type.LogSeverity;
 
 @Injectable()
 export class GCPLoggerService implements LoggerService {
@@ -45,6 +45,10 @@ export class GCPLoggerService implements LoggerService {
 
   error(message: any, ...optionalParams: any[]): any {
     this.writeLog(LogSeverity.ERROR, message, optionalParams);
+  }
+
+  fatal(message: any, ...optionalParams: any[]): any {
+    this.writeLog(LogSeverity.CRITICAL, message, optionalParams);
   }
 
   private writeLog(severity: LogSeverity, message: any, ...optionalParams: any[]): void {
