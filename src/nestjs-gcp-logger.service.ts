@@ -66,9 +66,10 @@ export class GCPLoggerService implements LoggerService {
       // Get from Node's asynchronous execution context.
       // https://nodejs.org/api/async_context.html#asynclocalstoragegetstore
       // https://docs.nestjs.com/recipes/async-local-storage#nestjs-cls
-      const { request, startTime } = this.cls.get();
+      const { request, startTime, labels = {} } = this.cls.get();
       metadata.httpRequest = request;
       metadata.latency = `${(performance.now() - startTime) / 1000}s`;
+      metadata.labels = { ...metadata.labels, ...labels };
     }
     const json_Entry = this.gcpLogger.entry(metadata, message);
     this.gcpLogger.write(json_Entry);

@@ -14,6 +14,7 @@ import { RequestAsyncStore } from '@tazgr/nestjs-gcp-logger/request-async-store'
         setup: (cls: ClsService<RequestAsyncStore>, req) => {
           cls.set('request', req);
           cls.set('startTime', performance.now());
+          cls.set('labels', {});
         },
       },
     }),
