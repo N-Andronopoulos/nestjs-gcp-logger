@@ -9,6 +9,7 @@ import { RequestAsyncStore } from '@tazgr/nestjs-gcp-logger/request-async-store'
   imports: [
     // Register the ClsModule,
     ClsModule.forRoot({
+      global: true,
       middleware: {
         mount: true,
         setup: (cls: ClsService<RequestAsyncStore>, req) => {

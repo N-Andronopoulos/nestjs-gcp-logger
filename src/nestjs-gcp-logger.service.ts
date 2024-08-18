@@ -1,11 +1,12 @@
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { Log, Logging, LogSync } from '@google-cloud/logging';
-import { google } from '@google-cloud/logging/build/protos/protos';
 import { GCPLoggerModuleOptions } from './nestjs-gcp-logger-module.options';
 import { MODULE_OPTIONS_TOKEN } from './nestjs-gcp-logger.module-definition';
 import { ClsService } from 'nestjs-cls';
-import { RequestAsyncStore } from '@tazgr/nestjs-gcp-logger/request-async-store';
-import LogSeverity = google.logging.type.LogSeverity;
+import { RequestAsyncStore } from './request-async-store';
+import { LogEntry } from '@google-cloud/logging/build/src/entry';
+
+type LogSeverity = 'INFO' | 'WARNING' | 'DEBUG' | 'ERROR' | 'CRITICAL';
 
 @Injectable()
 export class GCPLoggerService implements LoggerService {
@@ -32,23 +33,23 @@ export class GCPLoggerService implements LoggerService {
   }
 
   log(message: any, ...optionalParams: any[]): any {
-    this.writeLog(LogSeverity.INFO, message, optionalParams);
+    this.writeLog('INFO', message, optionalParams);
   }
 
   warn(message: any, ...optionalParams: any[]): any {
-    this.writeLog(LogSeverity.WARNING, message, optionalParams);
+    this.writeLog('WARNING', message, optionalParams);
   }
 
   debug(message: any, ...optionalParams: any[]): any {
-    this.writeLog(LogSeverity.DEBUG, message, optionalParams);
+    this.writeLog('DEBUG', message, optionalParams);
   }
 
   error(message: any, ...optionalParams: any[]): any {
-    this.writeLog(LogSeverity.ERROR, message, optionalParams);
+    this.writeLog('ERROR', message, optionalParams);
   }
 
   fatal(message: any, ...optionalParams: any[]): any {
-    this.writeLog(LogSeverity.CRITICAL, message, optionalParams);
+    this.writeLog('CRITICAL', message, optionalParams);
   }
 
   private writeLog(severity: LogSeverity, message: any, ...optionalParams: any[]): void {
@@ -60,15 +61,17 @@ export class GCPLoggerService implements LoggerService {
         ...{ ...optionalParams[0] },
       },
       resource: this.resource,
-    } as any;
+    } as Partial<LogEntry>;
 
     if (this.cls.isActive()) {
       // Get from Node's asynchronous execution context.
       // https://nodejs.org/api/async_context.html#asynclocalstoragegetstore
       // https://docs.nestjs.com/recipes/async-local-storage#nestjs-cls
       const { request, startTime, labels = {} } = this.cls.get();
-      metadata.httpRequest = request;
-      metadata.latency = `${(performance.now() - startTime) / 1000}s`;
+      metadata.httpRequest = {
+        ...request,
+        latency: { seconds: (performance.now() - startTime) / 1000 },
+      };
       metadata.labels = { ...metadata.labels, ...labels };
     }
     const json_Entry = this.gcpLogger.entry(metadata, message);
