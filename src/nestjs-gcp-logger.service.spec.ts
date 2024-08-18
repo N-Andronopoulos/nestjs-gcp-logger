@@ -18,7 +18,7 @@ describe('NestjsGcpLoggerService', () => {
           },
         },
       ],
-      imports: [ClsModule],
+      imports: [ClsModule.forRoot()],
     }).compile();
 
     service = await module.resolve<GCPLoggerService>(GCPLoggerService);
