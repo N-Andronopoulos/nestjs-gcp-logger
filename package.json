@@ -33,7 +33,7 @@
     "build": "tsc -p tsconfig.build.json",
     "format": "prettier --write \\\"demo/**/*.ts\\\" \\\"test/**/*.ts\\\" \\\"src/**/*.ts\\\"",
     "start": "nest start lib",
-    "start:demo": "nest start demo --watch",
+    "start:demo": "nest start demo --watch --debug",
     "start:dev": "nest start lib --watch",
     "start:debug": "nest start lib --debug --watch",
     "start:prod": "node dist/demo/main",
