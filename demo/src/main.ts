@@ -8,7 +8,7 @@ async function bootstrap() {
     abortOnError: true, // Propagates throws
     logger: false, // So it doesn't use the normal console logger at all.
   });
-  app.useLogger(await app.resolve(GCPLoggerService));
+  app.useLogger(app.get(GCPLoggerService));
   app.flushLogs();
   await app.listen(3000);
 }

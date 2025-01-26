@@ -21,9 +21,13 @@ If it's not setup you will get the default logs/logger.
 
 ```typescript
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule.register(), { bufferLogs: true });
-  // Important!
-  app.useLogger(await app.resolve(GCPLoggerService));
+  const app = await NestFactory.create(AppModule.register(), {
+    bufferLogs: true, // Starts writing when flushLogs is called.
+    abortOnError: true, // Propagates throws
+    logger: false, // So it doesn't use the normal console logger at all.
+  });
+  app.useLogger(app.get(GCPLoggerService));
+  app.flushLogs();
   await app.listen(3000);
 }
 ```
@@ -89,6 +93,6 @@ export class AppModule {}
 Enjoy!
 
 # Links
-Inspiration for find how to fill value in the configuration
+Inspiration for how to fill value in the configuration
 - https://cloud.google.com/logging/docs/reference/v2/rest/v2/MonitoredResource
 - https://cloud.google.com/run/docs/container-contract#env-vars
