@@ -71,13 +71,13 @@ export class GCPLoggerService implements LoggerService {
 
       // region tracing
       if (traceId) {
-        metadata['logging.googleapis.com/trace'] = `projects/${this.gcpProjectId}/traces/${traceId}`;
+        metadata.trace = `projects/${this.gcpProjectId}/traces/${traceId}`;
       }
       if (spanId) {
-        metadata['logging.googleapis.com/spanId'] = spanId;
+        metadata.spanId = spanId;
       }
       if (typeof traceSampled === 'boolean') {
-        metadata['logging.googleapis.com/trace_sampled'] = traceSampled;
+        metadata.traceSampled = traceSampled;
       }
       // endregion
 
@@ -85,12 +85,12 @@ export class GCPLoggerService implements LoggerService {
       metadata.httpRequest = {
         requestMethod: request.method,
         requestUrl: `${request.get('x-forwarded-proto') || 'http'}://${request.get('host')}${request.originalUrl}`,
-        requestSize: request.get('content-length') || '0',
-        userAgent: request.get('user-agent') || '',
-        remoteIp: request.ip || request.socket?.remoteAddress || '',
-        serverIp: request.socket?.localAddress || '',
-        referer: request.get('referer') || request.get('referrer') || '',
-        protocol: request.get('x-forwarded-proto') || request.protocol || 'HTTP/1.1',
+        requestSize: request.get('content-length'),
+        userAgent: request.get('user-agent'),
+        remoteIp: request.ip,
+        serverIp: request.socket?.localAddress,
+        referer: request.get('referer') || request.get('referrer'),
+        protocol: request.get('x-forwarded-proto') || request.protocol,
         latency: { seconds: (performance.now() - startTime) / 1000 },
       };
       metadata.labels = { ...metadata.labels, ...labels };
