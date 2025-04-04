@@ -17,7 +17,7 @@ import { RequestAsyncStore } from '@tazgr/nestjs-gcp-logger/request-async-store'
           cls.set('startTime', performance.now());
           cls.set('labels', {});
 
-          const traceContext = req.get('x-cloud-trace-context');
+          const traceContext = req.headers['x-cloud-trace-context'];
           if (traceContext) {
             // Trace Pattern TRACE_ID/SPAN_ID;o=OPTIONS
             // https://cloud.google.com/trace/docs/trace-context
@@ -33,4 +33,3 @@ import { RequestAsyncStore } from '@tazgr/nestjs-gcp-logger/request-async-store'
   exports: [GCPLoggerService],
 })
 export class GCPLoggingModule extends ConfigurableModuleClass implements NestModule {}
-

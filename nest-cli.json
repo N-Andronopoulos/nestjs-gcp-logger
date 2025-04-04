@@ -6,13 +6,22 @@
     "webpack": true
   },
   "projects": {
-    "demo": {
+    "demo-express": {
       "type": "application",
-      "root": "demo",
+      "root": "demo-express",
       "entryFile": "main",
       "sourceRoot": "src",
       "compilerOptions": {
-        "tsConfigPath": "demo/tsconfig.demo.json"
+        "tsConfigPath": "demo-express/tsconfig.demo-express.json"
+      }
+    },
+    "demo-fastify": {
+      "type": "application",
+      "root": "demo-fastify",
+      "entryFile": "main",
+      "sourceRoot": "src",
+      "compilerOptions": {
+        "tsConfigPath": "demo-fastify/tsconfig.demo-fastify.json"
       }
     },
     "lib": {

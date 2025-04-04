@@ -1,0 +1,9 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "sourceMap": true,
+    "outDir": "../dist/demo-fastify"
+  },
+  "include": ["src"],
+  "exclude": ["../node_modules", "../test", "../dist", "**/*spec.ts"]
+}

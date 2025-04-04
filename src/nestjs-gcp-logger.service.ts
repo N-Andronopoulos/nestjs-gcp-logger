@@ -84,13 +84,13 @@ export class GCPLoggerService implements LoggerService {
       // Set request context
       metadata.httpRequest = {
         requestMethod: request.method,
-        requestUrl: `${request.get('x-forwarded-proto') || 'http'}://${request.get('host')}${request.originalUrl}`,
-        requestSize: request.get('content-length'),
-        userAgent: request.get('user-agent'),
+        requestUrl: `${request.headers['x-forwarded-proto'] || 'http'}://${request.headers['host']}${request.originalUrl}`,
+        requestSize: request.headers['content-length'],
+        userAgent: request.headers['user-agent'],
         remoteIp: request.ip,
         serverIp: request.socket?.localAddress,
-        referer: request.get('referer') || request.get('referrer'),
-        protocol: request.get('x-forwarded-proto') || request.protocol,
+        referer: (request.headers['referer'] || request.headers['referrer']) as string,
+        protocol: (request.headers['x-forwarded-proto'] || request.protocol) as string,
         latency: { seconds: (performance.now() - startTime) / 1000 },
       };
       metadata.labels = { ...metadata.labels, ...labels };
