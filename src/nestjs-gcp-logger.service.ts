@@ -1,7 +1,7 @@
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { Log, Logging, LogSync } from '@google-cloud/logging';
 import { GCPLoggerModuleOptions } from './nestjs-gcp-logger-module.options';
-import { MODULE_OPTIONS_TOKEN } from './nestjs-gcp-logger.module-definition';
+import { GCP_LOG_MODULE_OPTIONS } from './nestjs-gcp-logger.module-definition';
 import { ClsService } from 'nestjs-cls';
 import { RequestAsyncStore } from './request-async-store';
 import { LogEntry } from '@google-cloud/logging/build/src/entry';
@@ -17,7 +17,7 @@ export class GCPLoggerService implements LoggerService {
   private readonly gcpLogger!: Log | LogSync;
 
   constructor(
-    @Inject(MODULE_OPTIONS_TOKEN) readonly options: GCPLoggerModuleOptions,
+    @Inject(GCP_LOG_MODULE_OPTIONS) readonly options: GCPLoggerModuleOptions,
     private readonly cls: ClsService<RequestAsyncStore>,
   ) {
     this.logName = options.logName;
@@ -67,9 +67,30 @@ export class GCPLoggerService implements LoggerService {
       // Get from Node's asynchronous execution context.
       // https://nodejs.org/api/async_context.html#asynclocalstoragegetstore
       // https://docs.nestjs.com/recipes/async-local-storage#nestjs-cls
-      const { request, startTime, labels = {} } = this.cls.get();
+      const { request, startTime, labels = {}, traceId, spanId, traceSampled } = this.cls.get();
+
+      // region tracing
+      if (traceId) {
+        metadata['logging.googleapis.com/trace'] = `projects/${this.gcpProjectId}/traces/${traceId}`;
+      }
+      if (spanId) {
+        metadata['logging.googleapis.com/spanId'] = spanId;
+      }
+      if (typeof traceSampled === 'boolean') {
+        metadata['logging.googleapis.com/trace_sampled'] = traceSampled;
+      }
+      // endregion
+
+      // Set request context
       metadata.httpRequest = {
-        ...request,
+        requestMethod: request.method,
+        requestUrl: `${request.get('x-forwarded-proto') || 'http'}://${request.get('host')}${request.originalUrl}`,
+        requestSize: request.get('content-length') || '0',
+        userAgent: request.get('user-agent') || '',
+        remoteIp: request.ip || request.socket?.remoteAddress || '',
+        serverIp: request.socket?.localAddress || '',
+        referer: request.get('referer') || request.get('referrer') || '',
+        protocol: request.get('x-forwarded-proto') || request.protocol || 'HTTP/1.1',
         latency: { seconds: (performance.now() - startTime) / 1000 },
       };
       metadata.labels = { ...metadata.labels, ...labels };

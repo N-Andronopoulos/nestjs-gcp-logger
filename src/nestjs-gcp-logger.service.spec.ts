@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { GCPLoggerService } from './nestjs-gcp-logger.service';
-import { MODULE_OPTIONS_TOKEN } from './nestjs-gcp-logger.module-definition';
+import { GCP_LOG_MODULE_OPTIONS } from './nestjs-gcp-logger.module-definition';
 import { ClsModule } from 'nestjs-cls';
 
 describe('NestjsGcpLoggerService', () => {
@@ -11,7 +11,7 @@ describe('NestjsGcpLoggerService', () => {
       providers: [
         GCPLoggerService,
         {
-          provide: MODULE_OPTIONS_TOKEN,
+          provide: GCP_LOG_MODULE_OPTIONS,
           useValue: {
             project: 'test-id',
             logName: 'test-app',

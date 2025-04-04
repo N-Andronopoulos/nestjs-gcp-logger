@@ -5,4 +5,8 @@ export interface RequestAsyncStore extends ClsStore {
   request: Terminal<Request>;
   startTime: number;
   labels: Terminal<{ [key: string]: string }>;
+  // Tracing stuff
+  traceId?: string;
+  spanId?: string;
+  traceSampled?: boolean;
 }

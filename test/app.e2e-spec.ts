@@ -15,7 +15,16 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
+  afterAll(async () => {
+    await app.close();
+  });
+
   it('/ (GET)', () => {
-    return request(app.getHttpServer()).get('/').set('Ip', '1.1.1.1').expect(200).expect('Hello World!');
+    return request(app.getHttpServer())
+      .get('/')
+      .set('Ip', '1.1.1.1')
+      .set('x-cloud-trace-context', 'trace1234/spanId1234;o=0')
+      .expect(200)
+      .expect('Hello World!');
   });
 });
